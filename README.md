@@ -1,70 +1,143 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Start creating a react app in the project directory:
 
-## Available Scripts
+### `npx create-react-app <app-name>`
 
-In the project directory, you can run:
+Or, if you want to use the directory as app directory just use:
 
-### `npm start`
+### `npx create-react-app .`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Electron integration
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Install electron dependencies
 
-### `npm test`
+Now, in your app directory use the follow command line:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `npm i -D electron electron-is-dev`
 
-### `npm run build`
+This command install a useful npm package called electron-is-dev used for
+checking whether your electron app is in development or production. You used the
+-D flag to install electron under dev dependencies.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Create a main.js file
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Now, you need to create a main.js (commonly named this way) file, to add the
+Electron settings to it. You can create it in your public directory, but I will
+create it in my src folder and I will restructure all directories within it,
+this way:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+![alt text](src\Assets\src-structure.PNG)
 
-### `npm run eject`
+![alt text](src\Assets\src-structure-opened.PNG)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+After you create your main.js file, paste this code into it:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+const path = require('path');
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+const { app, BrowserWindow } = require('electron');
+const isDev = require('electron-is-dev');
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+function createWindow() {
+  // Create the browser window.
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600
+  });
 
-## Learn More
+  // and load the index.html of the app.
+  // win.loadFile("index.html");
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`
+  );
+  // Open the DevTools.
+  if (isDev) {
+    win.webContents.openDevTools({ mode: 'detach' });
+  }
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.whenReady().then(createWindow);
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
 
-### Code Splitting
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
 
-### Analyzing the Bundle Size
+This code creates a Browserwindow instance provided by electron, which is used
+to render the web contents. It then loads the HTML file in the directory on to
+the Browserwindow.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+It also handles other window events like closed when the window is closed, focus
+when the window is in focus, ready-to-show when the web page has been rendered,
+and window states like maximize, minimize, restore.
 
-### Making a Progressive Web App
+To read more on the settings, you can visit the
+[electron quick start docs](https://www.electronjs.org/pt/docs/latest/tutorial/quick-start).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Configuring package.JSON
 
-### Advanced Configuration
+You now have electron installed, but you still need to make some changes to the
+package.json to sync the browser and desktop builds. First, update the project's
+entry file.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+In your package.json file, add this before your scripts:
 
-### Deployment
+`"main": "src/electron/main.js",`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+This line of package.JSON will use the main.js file created earlier for the main
+electron configurations.
 
-### `npm run build` fails to minify
+Next, install the following packages, concurrently and wait-on. These packages
+will listen to the app, and when it launches on the browser, it will launch as
+an electron app instead.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+`npm i -D concurrently wait-on`
+
+The `concurrently` allows us to run multiple commands within one script and
+`wait-on` will wait for port 3000 which is the default CRA port, to launch the
+app.
+
+In your scripts on package.json file, add:
+
+```
+"scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
+    "electron": "wait-on tcp:3000 && electron ."
+  },
+
+```
+
+The flag, BROWSER=none that you passed in the dev script will prevent the
+browser from launching once the React app compiles successfully.
+
+# References
+
+[Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+[React documentation](https://reactjs.org/).
+
+[React and Electron integration](https://www.section.io/engineering-education/desktop-application-with-react/).
+
+[Electron docs](https://www.electronjs.org/pt/docs/latest).
