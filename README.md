@@ -2,11 +2,11 @@
 
 Start creating a react app in the project directory:
 
-### `npx create-react-app <app-name>`
+`npx create-react-app <app-name>`
 
 Or, if you want to use the directory as app directory just use:
 
-### `npx create-react-app .`
+`npx create-react-app .`
 
 # Electron integration
 
@@ -14,7 +14,7 @@ Or, if you want to use the directory as app directory just use:
 
 Now, in your app directory use the follow command line:
 
-### `npm i -D electron electron-is-dev`
+`npm i -D electron electron-is-dev`
 
 This command install a useful npm package called electron-is-dev used for
 checking whether your electron app is in development or production. You used the
@@ -115,7 +115,7 @@ The `concurrently` allows us to run multiple commands within one script and
 `wait-on` will wait for port 3000 which is the default CRA port, to launch the
 app.
 
-In your scripts on package.json file, add:
+In your scripts in the package.json file, add:
 
 ```
 "scripts": {
@@ -131,6 +131,9 @@ In your scripts on package.json file, add:
 
 The flag, BROWSER=none that you passed in the dev script will prevent the
 browser from launching once the React app compiles successfully.
+
+So, you have everything set up. Running `npm run dev` should start an electron
+application.
 
 # References
 
