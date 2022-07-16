@@ -27,9 +27,9 @@ Electron settings to it. You can create it in your public directory, but I will
 create it in my src folder and I will restructure all directories within it,
 this way:
 
-![alt text](src\Assets\src-structure.PNG)
+![src folder structure](https://github.com/FilipeGarrido/arduino-serial-communication-react-electron-app/blob/main/src-structure.PNG?raw=true)
 
-![alt text](src\Assets\src-structure-opened.PNG)
+![src folder structure opened](https://github.com/FilipeGarrido/arduino-serial-communication-react-electron-app/blob/main/src-structure-opened.PNG?raw=true)
 
 After you create your main.js file, paste this code into it:
 
