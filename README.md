@@ -33,7 +33,7 @@ this way:
 
 After you create your main.js file, paste this code into it:
 
-```
+```javascript
 const path = require('path');
 
 const { app, BrowserWindow } = require('electron');
@@ -117,7 +117,7 @@ app.
 
 In your scripts in the package.json file, add:
 
-```
+```json
 "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
